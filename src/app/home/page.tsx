@@ -1,7 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import Navbar from "../components/navbar/navbar";
 import React, { useState, useEffect } from "react";
+import Navbar from "../components/navbar/navbar";
+import Foobar from "../components/foobar/foobar";
 import { Products, Product } from "../apis/main/interfaces";
 import { getAllProducts, addItemToCart, getAllCategories } from "../apis/main/apis";
 import IconButton from '@mui/material/IconButton';
@@ -142,6 +143,8 @@ export default function Main() {
                         </div>}
                 </div>
             }
+
+            <Foobar />
         </>
     )
 }
