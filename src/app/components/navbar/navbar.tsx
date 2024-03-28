@@ -3,12 +3,14 @@
 import React, { useState } from "react";
 import { Product } from "../../apis/main/interfaces";
 import { searchProducts } from "@/app/apis/main/apis";
+import AlertBox, { AlertType } from "../alert/alert";
 
 
-export default function Navbar({ cartItems, onSearch }: { cartItems: Product[], onSearch: (results: Product[]) => void }) {
+export default function Navbar({ cartItems, onCartChange, onSearch }: { cartItems: Product[], onCartChange: (results: Product[]) => void, onSearch: (results: Product[]) => void }) {
     const cartItemsCount = cartItems.length;
     const cartItemsPrice = cartItems.reduce((total, item) => total + item.price * (1 - item.discountPercentage / 100), 0).toFixed(2);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [alert, setAlert] = useState<AlertType | null>(null);
 
     // handle cart drawer open/close
     const toggleDrawer = () => {
@@ -18,6 +20,12 @@ export default function Navbar({ cartItems, onSearch }: { cartItems: Product[], 
         }
     };
 
+    // handle deleting items from cart
+    const handleDelete = (item: Product) => {
+        const updatedCartItems = cartItems.filter(cartItem => cartItem.id !== item.id);
+        onCartChange(updatedCartItems);
+    };
+
     // handle search form submit
     const handleSearchSubmit = async (e: any) => {
         e.preventDefault();
@@ -25,6 +33,17 @@ export default function Navbar({ cartItems, onSearch }: { cartItems: Product[], 
         searchProducts(searchTerm).then((data) => {
             onSearch(data.products);
         });
+    };
+
+    // handle purchase items in cart
+    const handlePurchase = () => {
+        if (cartItems.length === 0) {
+            setAlert({ status: "error", message: "Your cart is empty!", onClose: () => {} });
+            return;
+        } else {
+            setAlert({ status: "success", message: "Your order is being placed!", onClose: () => {} });
+            onCartChange([]);
+        }
     };
 
     return (
@@ -76,7 +95,7 @@ export default function Navbar({ cartItems, onSearch }: { cartItems: Product[], 
                         
                             {/* Header: Total items and total price */}
                             <li className="menu-title">
-                                <span>Cart - {cartItemsCount} Items</span>
+                                <span>Your Cart - {cartItemsCount} Items</span>
                                 <span>Total: ${cartItemsPrice}</span>
                             </li>
 
@@ -86,19 +105,24 @@ export default function Navbar({ cartItems, onSearch }: { cartItems: Product[], 
                                     <div className="flex items-center space-x-3">
                                         <img src={item.images[0]} alt={item.title} className="h-10 w-10 object-cover" />
                                         <div>
-                                            <div>{item.title}</div>
+                                            <div className="font-semibold">{item.title}</div>
                                             <div>${(item.price * (1 - item.discountPercentage / 100)).toFixed(2)}</div>
                                             {item.discountPercentage > 0 && (
                                                 <span className="text-gray-500 text-sm line-through">${item.price}</span>
                                             )}
                                         </div>
                                     </div>
+                                    <div className="flex justify-end">
+                                        <button onClick={() => handleDelete(item)} className="btn btn-outline btn-secondary" aria-label="Remove item">
+                                            Delete
+                                        </button>
+                                    </div>
                                 </li>
                             ))}
 
                             {/* Footer: Checkout button */}
                             <li>
-                                <button className="btn btn-primary w-full mt-4">Checkout</button>
+                                <button className="btn btn-primary w-full mt-4" onClick={handlePurchase}>Checkout</button>
                             </li>
                         </ul>
                     </div>
@@ -118,6 +142,9 @@ export default function Navbar({ cartItems, onSearch }: { cartItems: Product[], 
                     </ul>
                 </div>
             </div>
+
+            {/* alert box */}
+            {alert && <AlertBox status={alert.status} message={alert.message} onClose={() => setAlert(null)} />}
         </div>
     )
 }

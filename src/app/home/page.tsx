@@ -59,12 +59,17 @@ export default function Main() {
         }
     }
 
+    // handle updating cart items as callback from Navbar
+    const handleCartChange = (results: Product[]) => {
+        setCartItems(results);
+    }
+
     // handle getting current products for the current page
     const currentProducts = products.products?.slice((currentPage-1)*6, (currentPage-1)*6+6) || [];
 
     return (
         <>
-            <Navbar cartItems={cartItems} onSearch={handleSearchResults}/>
+            <Navbar cartItems={cartItems} onCartChange={handleCartChange} onSearch={handleSearchResults}/>
 
             <div className="w-full bg-gray-500 p-16 flex flex-col gap-16 items-center">
 
