@@ -18,16 +18,29 @@ export default function Main() {
     const [cartItems, setCartItems] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
+    // Initially fetch all products and categories from the APIs
     useEffect(() => {
-        getAllProducts().then((data) => {
-            setAllProducts(data);
-            setProducts(data);
-        });
-        getAllCategories().then((data) => {
-            setCategories(data);
-        });
-        setLoading(false);
+        const fetchData = async () => {
+            setLoading(true);
+            const productsData = await getAllProducts();
+            setAllProducts(productsData);
+            setProducts(productsData);
+    
+            const categoriesData = await getAllCategories();
+            setCategories(categoriesData);
+    
+            setLoading(false);
+        };
+        fetchData();
     }, []);
+
+    // check if the current page has loaded all products
+    useEffect(() => {
+        const currentProductsCount = products.products?.slice((currentPage - 1) * 6, currentPage * 6).length;
+        if (currentProductsCount !== undefined) {
+            setLoading(false);
+        }
+    }, [currentPage, products]);
 
     // handle adding products to cart
     const addToCart = (productToAdd: Product) => {
