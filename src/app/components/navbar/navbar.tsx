@@ -1,12 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Product } from "../../apis/main/interfaces";
+import { searchProducts } from "@/app/apis/main/apis";
 
 
-export default function Navbar({ cartItems }: { cartItems: Product[] }) {
+export default function Navbar({ cartItems, onSearch }: { cartItems: Product[], onSearch: (results: Product[]) => void }) {
     const cartItemsCount = cartItems.length;
     const cartItemsPrice = cartItems.reduce((total, item) => total + item.price * (1 - item.discountPercentage / 100), 0).toFixed(2);
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
     // handle cart drawer open/close
     const toggleDrawer = () => {
@@ -16,19 +18,43 @@ export default function Navbar({ cartItems }: { cartItems: Product[] }) {
         }
     };
 
+    // handle search form submit
+    const handleSearchSubmit = async (e: any) => {
+        e.preventDefault();
+        if (!searchTerm) return;
+        searchProducts(searchTerm).then((data) => {
+            onSearch(data.products);
+        });
+    };
+
     return (
         <div className="navbar bg-base-100">
 
             {/* website title */}
             <div className="flex-1">
-                <a className="btn btn-ghost text-xl">InnoCaption</a>
+                <button onClick={() => onSearch([])}>
+                    <a className="btn btn-ghost text-xl">InnoCaption</a>
+                </button>
             </div>
 
             <div className="flex-none gap-2">
 
                 {/* search bar */}
                 <div className="form-control">
-                    <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />
+                    <form onSubmit={handleSearchSubmit}>
+                        <input 
+                            type="text" 
+                            placeholder="Search" 
+                            value={searchTerm} 
+                            onChange={(e)=>setSearchTerm(e.target.value)} 
+                            onKeyDown={event => {
+                                if (event.key === 'Enter') {
+                                  handleSearchSubmit(event);
+                                }
+                            }}
+                            className="input input-bordered w-24 md:w-auto" 
+                        />
+                    </form>
                 </div>
 
                 {/* cart */}

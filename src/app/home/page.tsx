@@ -50,12 +50,21 @@ export default function Main() {
         setProducts({ ...products, products: filteredProducts });
     }
 
+    // handle page content change based on search results
+    const handleSearchResults = (results: Product[]) => {
+        if (results.length === 0) {
+            setProducts(allProducts);
+        } else {
+            setProducts({ ...products, products: results });
+        }
+    }
+
     // handle getting current products for the current page
     const currentProducts = products.products?.slice((currentPage-1)*6, (currentPage-1)*6+6) || [];
 
     return (
         <>
-            <Navbar cartItems={cartItems}/>
+            <Navbar cartItems={cartItems} onSearch={handleSearchResults}/>
 
             <div className="w-full bg-gray-500 p-16 flex flex-col gap-16 items-center">
 

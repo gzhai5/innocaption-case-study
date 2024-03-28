@@ -18,3 +18,24 @@ export interface Product {
     thumbnail: string;
     images: string[];
 }
+
+export interface AddProductResponse {
+    id: number;
+    title: string;
+}
+
+export interface DeleteProductResponse {
+    id: number;
+    title: string;
+    description: string;
+    price: number;
+    discountPercentage: number;
+    rating: number;
+    stock: number;
+    brand: string;
+    category: string;
+    thumbnail: string;
+    images: string[];
+    isDeleted: boolean;
+    deletedOn: string;
+}
