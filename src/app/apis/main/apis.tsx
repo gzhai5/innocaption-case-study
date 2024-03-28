@@ -6,6 +6,11 @@ export const getAllProducts = async (): Promise<Products> => {
   return response.data;
 }
 
+export const getAllCategories = async (): Promise<string[]> => {
+  const response = await instance.get("/products/categories");
+  return response.data;
+}
+
 export const addItemToCart = async (title: string): Promise<{id: number, title: string}> => {
     const response = await instance.post("/products/add", { title: title });
     return response.data;
