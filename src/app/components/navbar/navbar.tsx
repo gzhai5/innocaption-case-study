@@ -47,7 +47,7 @@ export default function Navbar({ cartItems, onCartChange, onSearch }: { cartItem
     };
 
     return (
-        <div className="navbar bg-base-100">
+        <div className="navbar bg-slate-100">
 
             {/* website title */}
             <div className="flex-1">

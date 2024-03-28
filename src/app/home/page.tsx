@@ -15,6 +15,7 @@ export default function Main() {
     const [currentCategories, setCurrentCategories] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [cartItems, setCartItems] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         getAllProducts().then((data) => {
@@ -24,6 +25,7 @@ export default function Main() {
         getAllCategories().then((data) => {
             setCategories(data);
         });
+        setLoading(false);
     }, []);
 
     // handle adding products to cart
@@ -71,71 +73,75 @@ export default function Main() {
         <>
             <Navbar cartItems={cartItems} onCartChange={handleCartChange} onSearch={handleSearchResults}/>
 
-            <div className="w-full bg-gray-500 p-16 flex flex-col gap-16 items-center">
+            {loading ? 
+                <div className="skeleton w-full h-screen bg-slate-100"></div>
+                :
+                <div className="w-full bg-slate-100 p-16 flex flex-col gap-16 items-center">
 
-                {/* collapse tags */}
-                <div className="collapse">
-                    <input type="checkbox" aria-label="Toggle Content" /> 
-                    <div className="collapse-title text-xl font-medium">
-                        Not sure what you are looking for?
+                    {/* collapse tags */}
+                    <div className="collapse">
+                        <input type="checkbox" aria-label="Toggle Content" /> 
+                        <div className="collapse-title text-xl font-medium">
+                            Not sure what you are looking for?
+                        </div>
+                        <div className="collapse-content"> 
+                            {categories.map((category, index) => (
+                                <button key={index} className={`btn btn-outline m-5 ${currentCategories.includes(category) ? 'btn-active' : ''}`} onClick={() => handleCategory(category)}>
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                    <div className="collapse-content"> 
-                        {categories.map((category, index) => (
-                            <button key={index} className={`btn m-5 ${currentCategories.includes(category) ? 'btn-active' : 'glass'}`} onClick={() => handleCategory(category)}>
-                                {category}
-                            </button>
-                        ))}
-                    </div>
-                </div>
 
-                {/* title */}
-                <div className="text-5xl">{currentProducts.length > 0? "Shop Top Seller" : "Sorry, We Can Not Find Any Related Product"}</div>
+                    {/* title */}
+                    <div className="text-5xl">{currentProducts.length > 0? "Shop Top Seller" : "Sorry, We Can Not Find Any Related Product"}</div>
 
-                {/* products */}
-                <div className="grid grid-cols-3 gap-20">
-                    {currentProducts.map(product => (
-                        <div key={product.id} className="card card-compact w-80 bg-base-100 shadow-xl">
+                    {/* products */}
+                    <div className="grid grid-cols-3 gap-20">
+                        {currentProducts.map(product => (
+                            <div key={product.id} className="card card-compact w-80 bg-base-100 shadow-xl">
 
-                            {/* product sliding images container */}
-                            <div className="w-full carousel rounded-t-lg h-72">
-                                {product.images.map((image, index) => (
-                                    <div className="carousel-item w-full" key={index}>
-                                        <img src={image} className="w-full" alt={product.title} />
-                                    </div> 
-                                ))}
-                            </div>
-                            
-                            {/* product details */}
-                            <div className="card-body flex flex-col justify-between">
-                                <h2 className="card-title">{product.title}</h2>
+                                {/* product sliding images container */}
+                                <div className="w-full carousel rounded-t-lg h-72">
+                                    {product.images.map((image, index) => (
+                                        <div className="carousel-item w-full" key={index}>
+                                            <img src={image} className="w-full" alt={product.title} />
+                                        </div> 
+                                    ))}
+                                </div>
+                                
+                                {/* product details */}
+                                <div className="card-body flex flex-col justify-between">
+                                    <h2 className="card-title">{product.title}</h2>
 
-                                {/* products prices & cart button */}
-                                <div className="card-actions flex flex-row gap-4 justify-end items-start p-2">
-                                    <div className="flex flex-row gap-2 items-center mt-3">
-                                        <span className="text-black text-sm font-semibold">${(product.price * (1 - product.discountPercentage / 100)).toFixed(2)}</span>
-                                        {product.discountPercentage > 0 && (
-                                            <span className="text-gray-500 text-sm line-through">${product.price}</span>
-                                        )}
+                                    {/* products prices & cart button */}
+                                    <div className="card-actions flex flex-row gap-4 justify-end items-start p-2">
+                                        <div className="flex flex-row gap-2 items-center mt-3">
+                                            <span className="text-black text-sm font-semibold">${(product.price * (1 - product.discountPercentage / 100)).toFixed(2)}</span>
+                                            {product.discountPercentage > 0 && (
+                                                <span className="text-gray-500 text-sm line-through">${product.price}</span>
+                                            )}
+                                        </div>
+                                        <IconButton onClick={() => addToCart(product)}>
+                                            <AddShoppingCartIcon/>
+                                        </IconButton>
                                     </div>
-                                    <IconButton onClick={() => addToCart(product)}>
-                                        <AddShoppingCartIcon/>
-                                    </IconButton>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-                
-                {/* pagination */}
-                {Math.ceil(products.products?.length / 6) > 1 &&
-                    <div className="join">
-                        {Array.from({ length: Math.ceil(products.products?.length / 6) }, (_, i) => i + 1).map(number => (
-                            <button key={number} onClick={() => setCurrentPage(number)} className="join-item btn">
-                                {number}
-                            </button>
                         ))}
-                    </div>}
-            </div>
+                    </div>
+                    
+                    {/* pagination */}
+                    {Math.ceil(products.products?.length / 6) > 1 &&
+                        <div className="join">
+                            {Array.from({ length: Math.ceil(products.products?.length / 6) }, (_, i) => i + 1).map(number => (
+                                <button key={number} onClick={() => setCurrentPage(number)} className="join-item btn w-24 bg-amber-900 text-white">
+                                    {number}
+                                </button>
+                            ))}
+                        </div>}
+                </div>
+            }
         </>
     )
 }
