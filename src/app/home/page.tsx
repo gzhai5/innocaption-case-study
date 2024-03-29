@@ -95,7 +95,7 @@ export default function Main() {
                     {/* collapse tags */}
                     <div className="collapse">
                         <input type="checkbox" aria-label="Toggle Content" /> 
-                        <div className="collapse-title text-xl font-medium">
+                        <div className="collapse-title text-xl font-medium text-black">
                             Not sure what you are looking for?
                         </div>
                         <div className="collapse-content"> 
@@ -108,12 +108,12 @@ export default function Main() {
                     </div>
 
                     {/* title */}
-                    <div className="text-5xl">{currentProducts.length > 0? "Shop Top Seller" : "Sorry, We Can Not Find Any Related Product"}</div>
+                    <div className="text-5xl text-black">{currentProducts.length > 0? "Shop Top Seller" : "Sorry, We Can Not Find Any Related Product"}</div>
 
                     {/* products */}
                     <div className="grid grid-cols-3 gap-20">
                         {currentProducts.map(product => (
-                            <div key={product.id} className="card card-compact w-80 bg-base-100 shadow-xl">
+                            <div key={product.id} className="card card-compact w-80 bg-slate-100 shadow-xl rounded-lg">
 
                                 {/* product sliding images container */}
                                 <div className="w-full carousel rounded-t-lg h-72">
@@ -125,7 +125,7 @@ export default function Main() {
                                 </div>
                                 
                                 {/* product details */}
-                                <div className="card-body flex flex-col justify-between">
+                                <div className="card-body flex flex-col justify-between bg-slate-100 text-black rounded-b-lg">
                                     <h2 className="card-title">{product.title}</h2>
 
                                     {/* products prices & cart button */}
